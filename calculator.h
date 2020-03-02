@@ -5,4 +5,4 @@
 #include <mutex>
 
 
-void integrate(std::mutex &m, double &data, const double div);
+void integrate(double start, double end, double &data, const double div);

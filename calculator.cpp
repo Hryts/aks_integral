@@ -17,16 +17,16 @@ double f(const double x, const double y) {
     return pow(res, -1);
 }
 
-void integrate(std::mutex &m, double &data, const double div) {
-    double res = 0;
-    double i = -50, j = -50;
-    while (i < 50) {
+void integrate(double start, double end, double &data, const double div) {
+    double res = 0.0;
+    double j = 0.0;
+    while (start < end) {
         while (j < 50) {
-            res += f(i, j);
+            res += f(start, j) * div * div;
             j += div;
         }
-        i += div;
-        j = -50;
+        start += div;
+        j = -50.0;
     }
 
     data = res;
