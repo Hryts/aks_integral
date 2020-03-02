@@ -1,0 +1,1 @@
+/usr/bin/c++  -pthread -g   CMakeFiles/main.dir/main.cpp.o CMakeFiles/main.dir/calculator.cpp.o  -o main 

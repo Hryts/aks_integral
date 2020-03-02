@@ -1,0 +1,3 @@
+/home/heeve/Documents/nazar/aks/integral/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/heeve/Documents/nazar/aks/integral/cmake-build-debug/CMakeFiles/main.dir
+/home/heeve/Documents/nazar/aks/integral/cmake-build-debug/CMakeFiles/edit_cache.dir

@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/heeve/Documents/nazar/aks/integral/calculator.cpp
+calculator.h
+/home/heeve/Documents/nazar/aks/integral/calculator.h
+
+/home/heeve/Documents/nazar/aks/integral/calculator.h
+
+/home/heeve/Documents/nazar/aks/integral/main.cpp
+iostream
+-
+main.h
+/home/heeve/Documents/nazar/aks/integral/main.h
+calculator.h
+/home/heeve/Documents/nazar/aks/integral/calculator.h
+cmath
+-
+
+/home/heeve/Documents/nazar/aks/integral/main.h
+
