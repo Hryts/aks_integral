@@ -27,6 +27,6 @@ int main() {
     for (auto x: local_res) {
         res += x;
     }
-    std::cout << res/2;
+    std::cout << res;
     return 0;
 }
