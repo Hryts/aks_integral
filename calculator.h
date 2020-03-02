@@ -5,4 +5,13 @@
 #include <mutex>
 
 
-void integrate(std::mutex &m, double &data, const double div);
+void integrate(double &data, params parameters);
+
+struct params {
+    double deltaX;
+    double deltaY;
+    double lowerX;
+    double lowerY;
+    double highX;
+    double highY;
+} ;
