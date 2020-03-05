@@ -1,0 +1,8 @@
+expAbsErr=10000
+expRelErr=0.001
+threads=2
+lowX=-50
+highX=50
+lowY=-50
+highY=50
+
