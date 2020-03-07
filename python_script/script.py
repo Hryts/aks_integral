@@ -15,15 +15,15 @@ def run(threads_num, experiments_number):
     subprocess.run(commands)
 
     # Run program
-    min_time = float('inf')
+    min_time_tmp = float('inf')
     for _ in range(experiments_number):
         cmd = f'{PROG} {CONF_FILE}'
         res = os.popen(cmd).read()
-        min_time = min(min_time, (float(so.split()[-1][:-1])))
+        min_time_tmp = min(min_time_tmp, (float(so.split()[-1][:-1])))
 
     result = res.split()[2]
 
-    return result, min_time
+    return result, min_time_tmp
 
 
 if __name__ == '__main__':
@@ -33,9 +33,28 @@ if __name__ == '__main__':
     REPS = int(sys.argv[1])
     RESULTS = dict()
     MAX_THREADS = 4
+    ABS_ERR = .0001
 
+    # Collect data from experiments
     for threads_num in range(MAX_THREADS):
         result, min_time = run(threads_num, REPS)
         RESULTS[str(threads_num)] = (result, min_time)
+
+    # Inspect collected data
+    calculations = [RESULTS[k][0] for k in RESULTS.keys()]
+    calculations.sort()
+    counter_tmp = 1
+    counter = 0
+    i, j = 0, 1
+    while j < len(calculations):
+        if calculations[i] + 2 * ABS_ERR >= calculations[j]:
+            j += 1
+            counter_tmp += 1
+        else:
+            i += 1
+            counter = max(counter, counter_tmp)
+            counter_tmp -= 1
+
+    print(f'{counter} results are within absolute error')
 
     print(RESULTS)
