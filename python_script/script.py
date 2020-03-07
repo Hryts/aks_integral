@@ -27,8 +27,9 @@ def run(threads_num, experiments_number):
 
 
 if __name__ == '__main__':
-    CONF_FILE = './configuration_file.txt'
-    PROG = './integral'
+    PATH_TO_SCRIPT = __file__
+    CONF_FILE = f'{PATH_TO_SCRIPT}/../configuration_file.txt'
+    PROG = f'{PATH_TO_SCRIPT}/../integral'
     REPS = int(sys.argv[1])
     RESULTS = dict()
     MAX_THREADS = 4
