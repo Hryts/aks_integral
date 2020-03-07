@@ -52,7 +52,7 @@ if __name__ == '__main__':
         RESULTS[str(threads_num)] = (result, min_time)
 
     # Inspect collected data
-    calculations = [RESULTS[k][0] for k in RESULTS.keys()]
+    calculations = [float(RESULTS[k][0]) for k in RESULTS.keys()]
     calculations.sort()
     counter_tmp = 1
     counter = 0
