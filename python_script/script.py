@@ -33,6 +33,8 @@ def get_path():
 
 
 def get_abs_err():
+    with open(CONF_FILE) as conf:
+        return float(conf.readline().split('=')[-1])
 
 
 if __name__ == '__main__':
@@ -42,7 +44,7 @@ if __name__ == '__main__':
     REPS = int(sys.argv[1])
     RESULTS = dict()
     MAX_THREADS = 4
-    ABS_ERR = .0001
+    ABS_ERR = get_abs_err()
 
     # Collect data from experiments
     for threads_num in range(1, MAX_THREADS+1):
