@@ -1,38 +1,43 @@
 import os
 import sys
-import subprocess
 
 
 def run(threads_num, experiments_number):
     # Reconfigure
     lines = open(CONF_FILE).read().splitlines()
     thread_line = lines[2].split(sep='=')
-    lines[2] = thread_line[0] + threads_num
+    lines[2] = thread_line[0] + str(threads_num)
     open(CONF_FILE, 'w').write('\n'.join(lines))
 
     # Recompile
     commands = ['make clean', 'cmake .', 'make']
-    subprocess.run(commands)
+    for command in commands:
+        os.system(command)
 
     # Run program
     min_time_tmp = float('inf')
     for _ in range(experiments_number):
         cmd = f'{PROG} {CONF_FILE}'
         res = os.popen(cmd).read()
-        min_time_tmp = min(min_time_tmp, (float(so.split()[-1][:-1])))
+        min_time_tmp = min(min_time_tmp, (float(res.split()[-1][:-1])))
 
     result = res.split()[2]
 
     return result, min_time_tmp
 
 
+def get_path():
+    tmp_path = str(__file__).split('/')[:-1]
+    return ''.join(tmp_path)
+
+
 if __name__ == '__main__':
-    PATH_TO_SCRIPT = __file__
+    PATH_TO_SCRIPT = get_path()
     CONF_FILE = f'{PATH_TO_SCRIPT}/../configuration_file.txt'
     PROG = f'{PATH_TO_SCRIPT}/../integral'
     REPS = int(sys.argv[1])
     RESULTS = dict()
-    MAX_THREADS = 4
+    MAX_THREADS = 1
     ABS_ERR = .0001
 
     # Collect data from experiments
