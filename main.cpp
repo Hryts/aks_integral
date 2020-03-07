@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    if (argc == 2) {
+    if (argc == REQUIRED_ARGC) {
         filename = argv[1];
     }
 
