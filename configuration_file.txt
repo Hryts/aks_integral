@@ -1,8 +1,9 @@
-expAbsErr=0.0001
-expRelErr=0.000001
+expAbsErr=0.01
+expRelErr=0.0001
 threads=4
 lowX=-50
 highX=50
 lowY=-50
 highY=50
-
+initialSteps=200
+maxExpNum=100000
