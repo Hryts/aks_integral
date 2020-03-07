@@ -11,7 +11,6 @@
 #include <iomanip>
 
 #define REQUIRED_ARGC 2
-#define INITIAL_PARTITION 200
 
 inline std::chrono::high_resolution_clock::time_point get_current_time_fenced() {
     std::atomic_thread_fence(std::memory_order_seq_cst);
@@ -54,7 +53,8 @@ int main(int argc, char **argv) {
     double resCurrent;
     double resPrev;
 
-    int parts = INITIAL_PARTITION;
+    int parts = parameters["initialSteps"];
+    int expNum = 0;
     double absErr;
     double relErr;
 
@@ -69,8 +69,8 @@ int main(int argc, char **argv) {
         resCurrent = multithread_integrate(parameters, f);
         absErr = std::abs(resCurrent - resPrev);
         relErr = absErr / resCurrent;
-
-    } while (absErr > parameters["expAbsErr"] || relErr > parameters["expRelErr"]);
+        expNum++;
+    } while ((absErr > parameters["expAbsErr"] || relErr > parameters["expRelErr"]) && expNum < parameters["maxExpNum"]);
     auto end_t = get_current_time_fenced();
 
 

@@ -7,7 +7,7 @@
 #include <iostream>
 
 #define MIN_RELATIVE        0.001
-#define REQUIRED_ARG_NUMBER 7
+#define REQUIRED_ARG_NUMBER 9
 
 std::unordered_map<std::string, double> read_file(const std::string &filename) {
     std::ifstream in;
@@ -31,7 +31,7 @@ std::unordered_map<std::string, double> read_file(const std::string &filename) {
 
         } else {
             std::cerr << "Couldn't open config file for reading. \n";
-            exit(5);
+            exit(4);
         }
     }
     catch (...) {
@@ -40,13 +40,9 @@ std::unordered_map<std::string, double> read_file(const std::string &filename) {
     }
 
     if (m["expRelErr"] > MIN_RELATIVE || m["lowX"] > m["highX"] || m["lowY"] > m["highY"] || m["expRelErr"] < 0 ||
-        m["expAbsErr"] < 0 || m["threads"] <= 0) {
-        std::cerr << "Wrong configuration file arguments. \n";
+        m["expAbsErr"] < 0 || m["threads"] <= 0 || m["initialSteps"] < 100 || m.size() != REQUIRED_ARG_NUMBER) {
+        std::cerr << "Wrong configuration file arguments. See the example in 'configuration_file.txt'\n";
         exit(3);
-    }
-    if (m.size() != REQUIRED_ARG_NUMBER) {
-        std::cerr << "There should be 7 arguments. See the example. \n";
-        exit(4);
     }
     in.close();
     return m;
