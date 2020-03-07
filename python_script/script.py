@@ -32,17 +32,20 @@ def get_path():
     return ''.join(tmp_path)
 
 
+def get_abs_err():
+
+
 if __name__ == '__main__':
     PATH_TO_SCRIPT = get_path()
     CONF_FILE = f'{PATH_TO_SCRIPT}/../configuration_file.txt'
     PROG = f'{PATH_TO_SCRIPT}/../integral'
     REPS = int(sys.argv[1])
     RESULTS = dict()
-    MAX_THREADS = 2
+    MAX_THREADS = 4
     ABS_ERR = .0001
 
     # Collect data from experiments
-    for threads_num in range(1, MAX_THREADS):
+    for threads_num in range(1, MAX_THREADS+1):
         result, min_time = run(threads_num, REPS)
         RESULTS[str(threads_num)] = (result, min_time)
 
