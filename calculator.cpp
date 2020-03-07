@@ -29,7 +29,7 @@ void integrate(myMap parameters, double &data, myFunc &f) {
 double multithread_integrate(myMap parameters, myFunc &f) {
     double res = 0.0;
 
-    int step = (std::abs(parameters["lowX"]) + std::abs(parameters["highX"])) / parameters["threads"];
+    int step = (parameters["highX"] - parameters["lowX"]) / parameters["threads"];
 
     double highX = parameters["highX"];
     parameters["highX"] = parameters["lowX"] + step;
