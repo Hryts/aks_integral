@@ -4,42 +4,56 @@
 
 #include "calculator.h"
 
+#include <iostream>
+#include <thread>
 
-double integrate(myMap parameters, const double delta, myFunc& f) {
-    double res = 0;
+
+
+
+void integrate(myMap parameters, double &data, myFunc &f) {
+    double res = 0.0;
     double x = parameters["lowX"];
     double y;
     while (x < parameters["highX"]) {
         y = parameters["lowY"];
         while (y < parameters["highY"]) {
-            res += f(x, y) * delta * delta;
-            y += delta;
+            res += f(x, y) * parameters["delta"] * parameters["delta"];
+            y += parameters["delta"];
         }
-        x += delta;
+        x += parameters["delta"];
+    }
+    data = res;
+}
+
+
+double multithread_integrate(myMap parameters, myFunc &f) {
+    double res = 0.0;
+
+    int step = (std::abs(parameters["lowX"]) + std::abs(parameters["highX"])) / parameters["threads"];
+
+    double highX = parameters["highX"];
+    parameters["highX"] = parameters["lowX"] + step;
+
+    std::vector<std::thread> v;
+    std::vector<double> local_res(parameters["threads"]);
+
+    for (int i = 0; i < parameters["threads"] - 1; ++i) {
+        v.emplace_back(integrate, parameters, std::ref(local_res[i]), f);
+        parameters["lowX"] += step;
+        parameters["highX"] += step;
+    }
+
+    parameters["highX"] = highX;
+    v.emplace_back(integrate, parameters, std::ref(local_res[parameters["threads"] - 1]), f);
+
+
+    for (auto &t: v) {
+        t.join();
+    }
+
+
+    for (auto x: local_res) {
+        res += x;
     }
     return res;
-}
-
-double integrate4Real(myMap parameters, myFunc &f) {
-    int parts = 500;
-    double resPrev;
-    double resCurrent;
-    double delta = (parameters["highY"] - parameters["lowY"]) / parts;
-    resCurrent = integrate(parameters, delta, f);
-    double absErr;
-    double relErr;
-    do {
-        resPrev = resCurrent;
-        parts *= 2;
-        delta = (parameters["highY"] - parameters["lowY"]) / parts;
-        resCurrent = integrate(parameters, delta, f);
-        absErr = std::abs(resCurrent - resPrev);
-        relErr = absErr / resCurrent;
-    } while (absErr > parameters["expAbsErr"] && relErr > parameters["expRelErr"]);
-    return resCurrent;
-}
-
-
-void multithread_integrate(myMap parameters, double &data, myFunc &f) {
-    data = integrate4Real(parameters, f);
 }

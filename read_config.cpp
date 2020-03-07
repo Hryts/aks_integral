@@ -18,7 +18,7 @@ std::unordered_map<std::string, double> read_file(const std::string &filename) {
             std::string s;
             while (getline(in, s)) {
                 s.erase(std::remove_if(s.begin(), s.end(), isspace), s.end());
-                auto eq = s.find("=");
+                auto eq = s.find('=');
 
                 if (s.empty() || eq == std::string::npos) {
                     continue;
@@ -31,7 +31,7 @@ std::unordered_map<std::string, double> read_file(const std::string &filename) {
 
         } else {
             std::cerr << "Couldn't open config file for reading. \n";
-            exit(1);
+            exit(5);
         }
     }
     catch (...) {
@@ -39,12 +39,13 @@ std::unordered_map<std::string, double> read_file(const std::string &filename) {
         exit(2);
     }
 
-    if (m["expRelErr"] < MIN_RELATIVE || m["lowX"] > m["highX"] || m["lowY"] > m["highY"]) {
+    if (m["expRelErr"] > MIN_RELATIVE || m["lowX"] > m["highX"] || m["lowY"] > m["highY"] || m["expRelErr"] < 0 ||
+        m["expAbsErr"] < 0 || m["threads"] <= 0) {
         std::cerr << "Wrong configuration file arguments. \n";
         exit(3);
     }
-    if (m.size() < REQUIRED_ARG_NUMBER){
-        std::cerr << "Number of arguments should be at least 7. \n";
+    if (m.size() != REQUIRED_ARG_NUMBER) {
+        std::cerr << "There should be 7 arguments. See the example. \n";
         exit(4);
     }
     in.close();

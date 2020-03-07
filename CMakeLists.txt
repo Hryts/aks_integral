@@ -5,4 +5,5 @@ set( CMAKE_CXX_STANDARD 17 )
 
 SET(CMAKE_CXX_FLAGS -pthread)
 
-add_executable( main main.cpp calculator.cpp read_config.cpp)
+
+add_executable( integral main.cpp calculator.cpp read_config.cpp)

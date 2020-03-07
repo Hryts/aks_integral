@@ -9,9 +9,8 @@
 typedef std::unordered_map<std::string, double> myMap;
 typedef const std::function<double(const double, const double)> myFunc;
 
-double integrate(myMap parameters, double deltaY, myFunc &f);
-
-double integrate4Real(myMap parameters, myFunc &f);
+void integrate(myMap parameters, double &data, myFunc &f);
 
 
-void multithread_integrate(myMap parameters, double &data, myFunc& f);
+
+double multithread_integrate(myMap parameters, myFunc &f);

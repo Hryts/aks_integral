@@ -4,23 +4,14 @@
 
 #include <iostream>
 #include <thread>
-#include <vector>
 #include <chrono>
 #include <atomic>
 #include "read_config.h"
 #include <cmath>
+#include <iomanip>
 
-
-double f(const double x, const double y) {
-    double res = 0.002;
-    for (int i = -2; i < 3; ++i) {
-        for (int j = -2; j < 3; ++j) {
-            res += pow(5 * i + 13 + j + pow((x - 16 * j), 6) + pow((y - 16 * i), 6), -1);
-        }
-    }
-    return pow(res, -1);
-}
-
+#define REQUIRED_ARGC 2
+#define INITIAL_PARTITION 200
 
 inline std::chrono::high_resolution_clock::time_point get_current_time_fenced() {
     std::atomic_thread_fence(std::memory_order_seq_cst);
@@ -34,47 +25,60 @@ inline long long to_us(const D &d) {
     return std::chrono::duration_cast<std::chrono::microseconds>(d).count();
 }
 
-int main() {
+double f(const double x, const double y) {
+    double res = 0.002;
+    for (int i = -2; i < 3; ++i) {
+        for (int j = -2; j < 3; ++j) {
+            res += pow(5 * i + 13 + j + pow((x - 16 * j), 6) + pow((y - 16 * i), 6), -1);
+        }
+    }
+    return pow(res, -1);
+}
 
-    myMap parameters = read_file("configuration_file.txt");
 
-    for(std::unordered_map<std::string, double>::const_iterator it = parameters.begin();
-            it != parameters.end(); ++it)
-    {
-        std::cout << it->first << " " << it->second << "\n";
+int main(int argc, char **argv) {
+
+    std::string filename("configuration_file.txt");
+
+    if (argc > REQUIRED_ARGC) {
+        std::cerr << "Number of required arguments is wrong. \n";
+        exit(1);
     }
 
-    double res = 0.0;
+    if (argc == 2) {
+        filename = argv[1];
+    }
 
-    int step = (abs(parameters["lowX"]) + abs(parameters["highX"])) / parameters["threads"];
-    double highX = parameters["highX"];
-    parameters["highX"] = parameters["lowX"] + step;
+    myMap parameters = read_file(filename);
 
-    std::vector<std::thread> v;
-    std::vector<double> local_res(parameters["threads"]);
+    double resCurrent;
+    double resPrev;
 
+    int parts = INITIAL_PARTITION;
+    double absErr;
+    double relErr;
+
+    parameters["delta"] = (parameters["highY"] - parameters["lowY"]) / parts;
+    resCurrent = multithread_integrate(parameters, f);
     auto start_t = get_current_time_fenced();
-    for (int i = 0; i < parameters["threads"] - 1; ++i) {
-        v.emplace_back(multithread_integrate, parameters, std::ref(local_res[i]), f);
-        parameters["lowX"] += step;
-        parameters["highX"] += step;
-    }
 
-    parameters["highX"] = highX;
-    v.emplace_back(multithread_integrate, parameters, std::ref(local_res[parameters["threads"] - 1]), f);
+    do {
+        resPrev = resCurrent;
+        parts *= 2;
+        parameters["delta"] = (parameters["highY"] - parameters["lowY"]) / parts;
+        resCurrent = multithread_integrate(parameters, f);
+        absErr = std::abs(resCurrent - resPrev);
+        relErr = absErr / resCurrent;
 
-
-    for (auto &t: v) {
-        t.join();
-    }
+    } while (absErr > parameters["expAbsErr"] || relErr > parameters["expRelErr"]);
     auto end_t = get_current_time_fenced();
 
 
-    for (auto x: local_res) {
-        res += x;
-    }
-    std::cout << "Time : " << to_us(end_t - start_t) / 1000 << std::endl;
-    std::cout << "Absolute : " << parameters["expAbsErr"] << " Relative : " << parameters["expRelErr"] << std::endl << "Result : " << res;
+    std::cout << "Result : " << std::setprecision(10) << resCurrent;
+    std::cout << "\nAbsolute error : " << absErr;
+    std::cout << "\nRelative error : " << relErr;
+    std::cout << "\nTime : " << to_us(end_t - start_t) / 1000000.0 << "s";
+
 
     return 0;
 }
