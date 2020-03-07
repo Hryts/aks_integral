@@ -6,7 +6,7 @@ def run(threads_num, experiments_number):
     # Reconfigure
     lines = open(CONF_FILE).read().splitlines()
     thread_line = lines[2].split(sep='=')
-    lines[2] = thread_line[0] + str(threads_num)
+    lines[2] = thread_line[0] + '=' + str(threads_num)
     open(CONF_FILE, 'w').write('\n'.join(lines))
 
     # Recompile
@@ -19,6 +19,7 @@ def run(threads_num, experiments_number):
     for _ in range(experiments_number):
         cmd = f'{PROG} {CONF_FILE}'
         res = os.popen(cmd).read()
+        print(res)
         min_time_tmp = min(min_time_tmp, (float(res.split()[-1][:-1])))
 
     result = res.split()[2]
@@ -37,11 +38,11 @@ if __name__ == '__main__':
     PROG = f'{PATH_TO_SCRIPT}/../integral'
     REPS = int(sys.argv[1])
     RESULTS = dict()
-    MAX_THREADS = 1
+    MAX_THREADS = 2
     ABS_ERR = .0001
 
     # Collect data from experiments
-    for threads_num in range(MAX_THREADS):
+    for threads_num in range(1, MAX_THREADS):
         result, min_time = run(threads_num, REPS)
         RESULTS[str(threads_num)] = (result, min_time)
 
@@ -60,6 +61,6 @@ if __name__ == '__main__':
             counter = max(counter, counter_tmp)
             counter_tmp -= 1
 
-    print(f'{counter} results are within absolute error')
+    print(f'{counter} out of {len(calculations)} results are within absolute error')
 
     print(RESULTS)
