@@ -1,20 +1,40 @@
 import os
 import sys
+import subprocess
 
 
-cmd = './integral ./configuration_file.txt'
+def run(threads_num, experiments_number):
+    # Reconfigure
+    lines = open(CONF_FILE).read().splitlines()
+    thread_line = lines[2].split(sep='=')
+    lines[2] = thread_line[0] + threads_num
+    open(CONF_FILE, 'w').write('\n'.join(lines))
 
-min_time = float('inf')
-reps = int(sys.argv[1])
-results = []
-for _ in range(reps):
-    print(_)
-    so = os.popen(cmd).read()
-    min_time = min(min_time, (float(so.split()[-1][:-1])))
-    results.append(float(so.split()[2]))
+    # Recompile
+    commands = ['make clean', 'cmake .', 'make']
+    subprocess.run(commands)
 
-results.sort()
+    # Run program
+    min_time = float('inf')
+    for _ in range(experiments_number):
+        cmd = f'{PROG} {CONF_FILE}'
+        res = os.popen(cmd).read()
+        min_time = min(min_time, (float(so.split()[-1][:-1])))
+
+    result = res.split()[2]
+
+    return result, min_time
 
 
+if __name__ == '__main__':
+    CONF_FILE = './configuration_file.txt'
+    PROG = './integral'
+    REPS = int(sys.argv[1])
+    RESULTS = dict()
+    MAX_THREADS = 4
 
-print(min_time)
+    for threads_num in range(MAX_THREADS):
+        result, min_time = run(threads_num, REPS)
+        RESULTS[str(threads_num)] = (result, min_time)
+
+    print(RESULTS)
